@@ -1,37 +1,39 @@
-from data.schema import GetEntity, CreteEntityResponse, Entity
-from utils.htttp_methods import HttpMethods
+from requests import Response
 
-BASE_URL = "http://localhost:8081/"
+from data.schema import Entity
+from utils.http_methods import HttpMethods
+from data.config import BASE_URL
 
 
 class EntityApi:
-    @staticmethod
-    def create_new_entity(body: Entity) -> tuple[CreteEntityResponse, int]:
-        post_url = BASE_URL + "api/create"
-        response_body = HttpMethods.post(post_url, body.model_dump())
-        return CreteEntityResponse(id=response_body.text), response_body.status_code
+
+    create_endpoint = "api/create"
+    get_endpoint = "api/get/{}"
+    get_all_endpoint = "api/getAll"
+    patch_endpoint = "api/patch/{}"
+    delete_endpoint = "api/delete/{}"
 
     @staticmethod
-    def get_entity_by_id(entity_id: int) -> tuple[GetEntity, int]:
-        get_url = BASE_URL + f"api/get/{entity_id}"
-        response_body = HttpMethods.get(get_url)
-        return GetEntity(**response_body.json()), response_body.status_code
+    def create_new_entity(body: Entity) -> Response:
+        post_url = BASE_URL + EntityApi.create_endpoint
+        return HttpMethods.post(post_url, body.model_dump())
 
     @staticmethod
-    def get_entities() -> list[GetEntity]:
-        get_url = BASE_URL + "api/getAll"
-        response_body = HttpMethods.get(get_url)
-        entities = [GetEntity(**entity) for entity in response_body.json().get("entity")]
-        return entities
+    def get_entity_by_id(entity_id: int) -> Response:
+        get_url = BASE_URL + EntityApi.get_endpoint.format(entity_id)
+        return HttpMethods.get(get_url)
 
     @staticmethod
-    def patch_entity_by_id(entity_id: int, body: Entity) -> int:
-        patch_url = BASE_URL + f"api/patch/{entity_id}"
-        response_body = HttpMethods.patch(patch_url, body.model_dump())
-        return response_body.status_code
+    def get_entities() -> Response:
+        get_url = BASE_URL + EntityApi.get_all_endpoint
+        return HttpMethods.get(get_url)
 
     @staticmethod
-    def delete_entity_by_id(entity_id: int) -> int:
-        delete_url = BASE_URL + f"api/delete/{entity_id}"
-        response_body = HttpMethods.delete(delete_url, entity_id)
-        return response_body.status_code
+    def patch_entity_by_id(entity_id: int, body: Entity) -> Response:
+        patch_url = BASE_URL + EntityApi.patch_endpoint.format(entity_id)
+        return HttpMethods.patch(patch_url, body.model_dump())
+
+    @staticmethod
+    def delete_entity_by_id(entity_id: int) -> Response:
+        delete_url = BASE_URL + EntityApi.delete_endpoint.format(entity_id)
+        return HttpMethods.delete(delete_url, entity_id)
