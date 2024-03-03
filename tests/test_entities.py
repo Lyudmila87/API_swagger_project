@@ -15,7 +15,7 @@ class TestEntity:
             create_entity_response = EntityApi.create_new_entity(create_entity_data)
             serialized_post_response = CreteEntityResponse(id=create_entity_response.text)
 
-        with allure.step("Проверка создания сущности"):
+        with allure.step("Проверка статус-кода и факта создания сущности"):
             assert create_entity_response.status_code == 200, "Статус-код не соответствует"
             check_create_entity = EntityApi.get_entity_by_id(serialized_post_response.id)
             serialized_get_response = GetEntity(**check_create_entity.json())
@@ -49,9 +49,13 @@ class TestEntity:
             get_entity_response = EntityApi.get_entity_by_id(entity_id)
             serialized_get_response = GetEntity(**get_entity_response.json())
 
-        with allure.step("Проверка валидности сущности"):
+        with allure.step("Проверка статус-кода"):
             assert get_entity_response.status_code == 200, "Статус код не соответствует"
+
+        with allure.step("Проверка валидности сущности"):
             Checking.assert_entity_response_data(serialized_get_response, create_entity_data)
+
+        with allure.step("Проверка ID сущности"):
             assert serialized_get_response.id == entity_id, "ID сущности не соответствует"
 
     @allure.feature("Entity")
@@ -77,9 +81,13 @@ class TestEntity:
             update_entity_data = create_entity_data.model_copy(update={"important_numbers": [26, 11, 1987]})
             patch_entity_response = EntityApi.patch_entity_by_id(entity_id, update_entity_data)
 
-        with allure.step("Проверка изменения сущности"):
+        with allure.step("Проверка статус-кода"):
             assert patch_entity_response.status_code == 204, "Код ответа не соответсвует"
             update_entity_response = EntityApi.get_entity_by_id(entity_id)
+
+        with allure.step("Проверка ID сущности"):
             serialized_get_response = GetEntity(**update_entity_response.json())
             assert entity_id == serialized_get_response.id, "ID сущности изменился"
+
+        with allure.step("Проверка факта обновления сущности"):
             Checking.assert_entity_response_data(serialized_get_response, update_entity_data)

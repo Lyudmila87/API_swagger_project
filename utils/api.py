@@ -7,33 +7,28 @@ from data.config import BASE_URL
 
 class EntityApi:
 
-    create_endpoint = "api/create"
-    get_endpoint = "api/get/{}"
-    get_all_endpoint = "api/getAll"
-    patch_endpoint = "api/patch/{}"
-    delete_endpoint = "api/delete/{}"
+    CREATE_URL = BASE_URL + "api/create"
+    GET_URL = BASE_URL + "api/get/{}"
+    GET_ALL_URL = BASE_URL + "api/getAll"
+    PATCH_URL = BASE_URL + "api/patch/{}"
+    DELETE_URL = BASE_URL + "api/delete/{}"
 
     @staticmethod
     def create_new_entity(body: Entity) -> Response:
-        post_url = BASE_URL + EntityApi.create_endpoint
-        return HttpMethods.post(post_url, body.model_dump())
+        return HttpMethods.post(EntityApi.CREATE_URL, body.model_dump())
 
     @staticmethod
     def get_entity_by_id(entity_id: int) -> Response:
-        get_url = BASE_URL + EntityApi.get_endpoint.format(entity_id)
-        return HttpMethods.get(get_url)
+        return HttpMethods.get(EntityApi.GET_URL.format(entity_id))
 
     @staticmethod
     def get_entities() -> Response:
-        get_url = BASE_URL + EntityApi.get_all_endpoint
-        return HttpMethods.get(get_url)
+        return HttpMethods.get(EntityApi.GET_ALL_URL)
 
     @staticmethod
     def patch_entity_by_id(entity_id: int, body: Entity) -> Response:
-        patch_url = BASE_URL + EntityApi.patch_endpoint.format(entity_id)
-        return HttpMethods.patch(patch_url, body.model_dump())
+        return HttpMethods.patch(EntityApi.PATCH_URL.format(entity_id), body.model_dump())
 
     @staticmethod
     def delete_entity_by_id(entity_id: int) -> Response:
-        delete_url = BASE_URL + EntityApi.delete_endpoint.format(entity_id)
-        return HttpMethods.delete(delete_url, entity_id)
+        return HttpMethods.delete(EntityApi.DELETE_URL.format(entity_id), entity_id)
